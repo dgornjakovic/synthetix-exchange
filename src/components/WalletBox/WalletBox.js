@@ -8,7 +8,7 @@ import orderBy from 'lodash/orderBy';
 import { getAvailableSynths } from '../../ducks/synths';
 
 import { HeadingSmall, DataSmall, LabelSmall } from '../Typography';
-import { Table, Tr, Thead, Tbody, Th, Td, DataLabel } from '../Table';
+import { Table, Tr, Thead, Tbody, Th, Td, DataLabel } from '../deprecated/Table';
 import { ButtonSort } from '../Button';
 import Spinner from '../Spinner';
 import Currency from '../Currency';

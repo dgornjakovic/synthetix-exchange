@@ -117,7 +117,7 @@
 			}
 		},
 		"my-loans": {
-			"title": "my loans",
+			"title": "your loans",
 			"table": {
 				"amount-borrowed-col": "amount borrowed",
 				"collateral-col": "collateral",
@@ -144,6 +144,52 @@
 			}
 		}
 	},
+	"assets": {
+		"navigation": {
+			"overview": "overview",
+			"transactions": "transactions"
+		},
+		"overview": {
+			"dashboard": {
+				"estimated-value": {
+					"title": "estimated value"
+				},
+				"balance-chart": {
+					"title": "synth balance",
+					"period": {
+						"1mo": "last month"
+					}
+				},
+				"breakdown": {
+					"title": "wallet breakdown"
+				}
+			},
+			"my-assets": {
+				"title": "your assets",
+				"table": {
+					"asset-col": "asset",
+					"description-col": "description",
+					"total-col": "total",
+					"pending-txs-col": "pending txs",
+					"actions-col": "actions"
+				}
+			}
+		},
+		"transactions": {
+			"title": "transactions history",
+			"table": {
+				"date-time-col": "date | time",
+				"asset-col": "asset",
+				"total-col": "total",
+				"details-col": "details",
+				"verify-col": "verify",
+				"tx-type": {
+					"in": "Transferred in",
+					"out": "Transferred out"
+				}
+			}
+		}
+	},
 	"common": {
 		"max": "max",
 		"gas-limit": "gas limit",
@@ -156,7 +202,11 @@
 			"close": "close",
 			"edit": "edit",
 			"confirm": "confirm",
-			"click-to-retry": "click to retry"
+			"click-to-retry": "click to retry",
+			"trade": "trade",
+			"info": "info",
+			"convert-to-eth": "convert to eth",
+			"view": "view"
 		},
 		"tx-status": {
 			"waiting": "Waiting",

@@ -16,7 +16,7 @@ import { getGasInfo } from '../../ducks/';
 import { setGasPrice } from '../../ducks/transaction';
 import { getEthRate } from '../../ducks/rates';
 
-import { Table, Tr, Th, Td, Thead, Tbody, DataLabel } from '../Table';
+import { Table, Tr, Th, Td, Thead, Tbody, DataLabel } from '../deprecated/Table';
 import { ButtonPrimary } from '../Button';
 import { Z_INDEX } from '../../constants/ui';
 
