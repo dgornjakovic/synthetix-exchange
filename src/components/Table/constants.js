@@ -1,3 +1,5 @@
 export const TABLE_PALETTE = {
-	LIGHT_SECONDARY: 'light-secondary',
+	PRIMARY: 'primary',
+	LIGHT: 'light-secondary',
+	STRIPED: 'striped',
 };

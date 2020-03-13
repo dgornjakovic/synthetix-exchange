@@ -1,156 +1,163 @@
+import { createSlice, createSelector } from '@reduxjs/toolkit';
+import orderBy from 'lodash/orderBy';
+
+import { LOCAL_STORAGE_KEYS } from 'src/constants/storage';
+import { CRYPTO_CURRENCY_MAP } from 'src/constants/currency';
+
 import { setSigner } from '../utils/snxJSConnector';
 import { getAddress } from '../utils/formatters';
 import { defaultNetwork } from '../utils/networkUtils';
 
-const UPDATE_WALLET_STATUS = 'WALLET/UPDATE_WALLET_STATUS';
-const RESET_WALLET_STATUS = 'WALLET/RESET_WALLET_STATUS';
-const UPDATE_WALLET_PAGINATOR_INDEX = 'WALLET/UPDATE_WALLET_PAGINATOR_INDEX';
-const SET_DERIVATION_PATH = 'WALLET/SET_DERIVATION_PATH';
-const UPDATE_WALLET_BALANCES = 'WALLET/UPDATE_BALANCES';
-
-const FETCH_WALLET_BALANCES_REQUEST = 'WALLET/FETCH_WALLET_BALANCES_REQUEST';
-const FETCH_WALLET_BALANCES_SUCCESS = 'WALLET/FETCH_WALLET_BALANCES_SUCCESS';
-const FETCH_WALLET_BALANCES_FAILURE = 'WALLET/FETCH_WALLET_BALANCES_FAILURE';
-
-import { getWalletBalances } from '../dataFetcher';
+import { fetchSynthsBalance, fetchEthBalance } from '../dataFetcher';
 import { getAvailableSynths } from './synths';
-import { getWalletInfo } from './index';
 
-const defaultState = {
+const initialState = {
+	walletType: '',
 	unlocked: false,
 	unlockError: null,
 	walletPaginatorIndex: 0,
 	availableWallets: [],
 	currentWallet: null,
-	derivationPath: localStorage.getItem('derivationPath'),
+	derivationPath: localStorage.getItem(LOCAL_STORAGE_KEYS.WALLET_DERIVATION_PATH),
 	balances: null,
 	networkId: defaultNetwork.networkId,
 	networkName: defaultNetwork.name,
 	isFetchingWalletBalances: false,
 };
 
-// Reducer
-const reducer = (state = defaultState, action = {}) => {
-	switch (action.type) {
-		case RESET_WALLET_STATUS: {
-			return defaultState;
-		}
-		case UPDATE_WALLET_STATUS: {
-			return { ...state, ...action.payload };
-		}
-		case UPDATE_WALLET_PAGINATOR_INDEX: {
-			return { ...state, walletPaginatorIndex: action.payload };
-		}
-		case SET_DERIVATION_PATH: {
+export const walletSlice = createSlice({
+	name: 'wallet',
+	initialState,
+	reducers: {
+		resetWalletReducer: () => {
+			return initialState;
+		},
+		updateWalletReducer: (state, action) => {
+			const { payload } = action;
+
 			return {
 				...state,
-				derivationPath: action.payload,
-				availableWallets: [],
-				walletPaginatorIndex: 0,
+				...payload,
+				currentWallet: payload.currentWallet
+					? getAddress(payload.currentWallet)
+					: state.currentWallet,
 			};
-		}
-		case UPDATE_WALLET_BALANCES: {
-			return {
-				...state,
-				balances: action.payload,
-			};
-		}
-		case FETCH_WALLET_BALANCES_REQUEST: {
-			return {
-				...state,
-				isFetchingWalletBalances: true,
-			};
-		}
-		case FETCH_WALLET_BALANCES_SUCCESS: {
-			return {
-				...state,
-				isFetchingWalletBalances: false,
-			};
-		}
-		case FETCH_WALLET_BALANCES_FAILURE: {
-			return {
-				...state,
-				isFetchingWalletBalances: false,
-			};
-		}
-		default:
-			return state;
+		},
+		updateWalletPaginatorIndex: (state, action) => {
+			state.walletPaginatorIndex = action.payload;
+		},
+		updateNetworkSettings: (state, action) => {
+			const { networkId, networkName } = action.payload;
+
+			state.networkId = networkId;
+			state.networkName = networkName;
+		},
+		setDerivationPath: (state, action) => {
+			const { signerOptions, derivationPath } = action.payload;
+
+			/* TODO: move this side effect to a saga */
+			setSigner(signerOptions);
+			localStorage.setItem(LOCAL_STORAGE_KEYS.WALLET_DERIVATION_PATH, derivationPath);
+
+			state.derivationPath = derivationPath;
+			state.availableWallets = [];
+			state.walletPaginatorIndex = 0;
+		},
+		fetchWalletBalancesRequest: state => {
+			state.isFetchingWalletBalances = true;
+		},
+		fetchWalletBalancesSuccess: (state, action) => {
+			const { balances } = action.payload;
+
+			state.balances = balances;
+			state.isFetchingWalletBalances = false;
+		},
+		fetchWalletBalancesFailure: state => {
+			state.isFetchingWalletBalances = false;
+		},
+	},
+});
+
+export const getWalletState = state => state.wallet;
+export const getNetworkId = state => getWalletState(state).networkId;
+export const getNetworkName = state => getWalletState(state).networkName;
+export const getNetwork = state => ({
+	networkId: getNetworkId(state),
+	networkName: getNetworkName(state),
+});
+export const getCurrentWalletAddress = state => getWalletState(state).currentWallet;
+export const getWalletBalancesMap = state => getWalletState(state).balances;
+
+export const getTotalWalletBalanceUSD = createSelector(getWalletBalancesMap, walletBalances => {
+	if (walletBalances == null) {
+		return 0;
 	}
-};
-
-// Actions
-const setDerivationPath = path => {
-	return {
-		type: SET_DERIVATION_PATH,
-		payload: path,
-	};
-};
-
-export const derivationPathChange = (signerOptions, derivationPath) => {
-	setSigner(signerOptions);
-	localStorage.setItem('derivationPath', derivationPath);
-	return setDerivationPath(derivationPath);
-};
-
-export const resetWalletStatus = () => {
-	return {
-		type: RESET_WALLET_STATUS,
-	};
-};
-
-export const updateWalletStatus = walletStatus => {
-	const payload = walletStatus.currentWallet
-		? {
-				...walletStatus,
-				currentWallet: walletStatus.currentWallet ? getAddress(walletStatus.currentWallet) : null,
-		  }
-		: { ...walletStatus };
-	return {
-		type: UPDATE_WALLET_STATUS,
-		payload,
-	};
-};
-
-export const updateWalletPaginatorIndex = index => {
-	return {
-		type: UPDATE_WALLET_PAGINATOR_INDEX,
-		payload: index,
-	};
-};
-
-export const updateWalletBalances = ({ synths, eth }) => {
-	return {
-		type: UPDATE_WALLET_BALANCES,
-		payload: { synths, eth },
-	};
-};
-
-export const fetchWalletBalancesRequest = () => ({
-	type: FETCH_WALLET_BALANCES_REQUEST,
+	let sumUSD = 0;
+	const { eth, synths } = walletBalances;
+	if (eth) {
+		sumUSD += walletBalances.eth.usdBalance;
+	}
+	if (synths) {
+		sumUSD += walletBalances.synths.usdBalance;
+	}
+	return sumUSD;
 });
 
-export const fetchWalletBalancesSuccess = () => ({
-	type: FETCH_WALLET_BALANCES_SUCCESS,
+export const getWalletBalances = createSelector(getWalletBalancesMap, walletBalances => {
+	if (walletBalances == null) {
+		return [];
+	}
+
+	const { eth, synths } = walletBalances;
+
+	let assets = [];
+
+	if (eth) {
+		assets.push({
+			name: CRYPTO_CURRENCY_MAP.ETH,
+			...eth,
+		});
+	}
+
+	Object.keys(synths.balances).forEach(currencyKey => {
+		const synth = synths.balances[currencyKey];
+		if (synth && synth.balance > 0) {
+			assets.push({ name: currencyKey, ...synth });
+		}
+	});
+
+	return orderBy(assets, 'usdBalance', 'desc');
 });
 
-export const fetchWalletBalancesFailure = () => ({
-	type: FETCH_WALLET_BALANCES_FAILURE,
-});
+const {
+	addAvailableWallets,
+	updateNetworkSettings,
+	resetWalletReducer,
+	updateWalletReducer,
+	setDerivationPath,
+	updateWalletPaginatorIndex,
+	fetchWalletBalancesRequest,
+	fetchWalletBalancesSuccess,
+	fetchWalletBalancesFailure,
+} = walletSlice.actions;
 
 export const fetchWalletBalances = () => async (dispatch, getState) => {
 	const state = getState();
-	const walletInfo = getWalletInfo(state);
 	const synths = getAvailableSynths(state);
 
-	const currentWallet = walletInfo.currentWallet;
+	const currentWalletAddress = getCurrentWalletAddress(state);
 
-	if (currentWallet != null) {
+	if (currentWalletAddress != null) {
 		dispatch(fetchWalletBalancesRequest());
 		try {
-			const balances = await getWalletBalances(currentWallet, synths);
+			const [synthsBalance, ethBalance] = await Promise.all([
+				fetchSynthsBalance(currentWalletAddress, synths),
+				fetchEthBalance(currentWalletAddress),
+			]);
 
-			dispatch(updateWalletBalances(balances));
-			dispatch(fetchWalletBalancesSuccess());
+			const balances = { synths: synthsBalance, eth: ethBalance };
+
+			dispatch(fetchWalletBalancesSuccess({ balances }));
 
 			return true;
 		} catch (e) {
@@ -162,4 +169,16 @@ export const fetchWalletBalances = () => async (dispatch, getState) => {
 	return false;
 };
 
-export default reducer;
+export default walletSlice.reducer;
+
+export {
+	addAvailableWallets,
+	updateNetworkSettings,
+	setDerivationPath,
+	resetWalletReducer,
+	updateWalletReducer,
+	updateWalletPaginatorIndex,
+	fetchWalletBalancesRequest,
+	fetchWalletBalancesSuccess,
+	fetchWalletBalancesFailure,
+};

@@ -32,20 +32,20 @@ export const Transactions = memo(({ transactions }) => {
 						{
 							Header: t('assets.your-assets.table.asset-col'),
 							accessor: 'asset-description',
-							Cell: cellProps => cellProps.cell.value,
+							Cell: cellProps => <span>cellProps.cell.value</span>,
 							width: 150,
 						},
 						{
 							Header: t('assets.your-assets.table.asset-col'),
 							accessor: 'total',
-							Cell: cellProps => cellProps.cell.value,
+							Cell: cellProps => <span>cellProps.cell.value</span>,
 							width: 150,
 							sortable: true,
 						},
 						{
 							Header: t('assets.your-assets.table.asset-col'),
 							accessor: 'pendingTotal',
-							Cell: cellProps => cellProps.cell.value,
+							Cell: cellProps => <span>cellProps.cell.value</span>,
 							width: 150,
 							sortable: true,
 						},

@@ -20,6 +20,7 @@ import GweiPopup from '../../components/GweiPopup';
 
 import Trade from '../Trade';
 import Loans from '../Loans';
+import Assets from '../Assets';
 import Home from '../Home';
 
 const App = ({ isAppReady, currentTheme }) => {
@@ -49,6 +50,14 @@ const App = ({ isAppReady, currentTheme }) => {
 						render={routeProps => (
 							<MainLayout isAppReady={isAppReady}>
 								<Loans {...routeProps} />
+							</MainLayout>
+						)}
+					/>
+					<Route
+						path={ROUTES.Assets.Home}
+						render={routeProps => (
+							<MainLayout isAppReady={isAppReady}>
+								<Assets {...routeProps} />
 							</MainLayout>
 						)}
 					/>

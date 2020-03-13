@@ -10,6 +10,7 @@ import { ReactComponent as SortUpIcon } from 'src/assets/images/sort-up.svg';
 import { ReactComponent as SortIcon } from 'src/assets/images/sort.svg';
 
 import { lightTheme, darkTheme } from 'src/styles/theme';
+import { FlexDivCentered } from 'src/shared/commonStyles';
 
 import { TABLE_PALETTE } from './constants';
 
@@ -19,7 +20,7 @@ export const Table = ({
 	options = {},
 	noResultsMessage = null,
 	onTableRowClick = undefined,
-	palette,
+	palette = TABLE_PALETTE.PRIMARY,
 }) => {
 	const memoizedColumns = useMemo(
 		() => columns,
@@ -93,52 +94,30 @@ Table.propTypes = {
 	palette: PropTypes.string,
 };
 
-export const TableRow = styled.div`
-	background-color: ${props => props.theme.colors.surfaceL3};
-	margin-bottom: 8px;
-`;
+export const TableRow = styled.div``;
 
 const TableBody = styled.div`
-	max-height: calc(100% - 40px);
 	overflow-y: auto;
 	overflow-x: hidden;
 `;
 
 const TableBodyRow = styled(TableRow)`
-	background-color: ${props =>
-		props.isSelectedLoan ? props.theme.colors.accentDark : props.theme.colors.surfaceL3};
-	&:hover {
-		background-color: ${props => props.theme.colors.accentDark};
-		> * {
-			transition: transform 0.2s ease-out;
-			transform: scale(1.02);
-		}
-	}
 	cursor: ${props => (props.onClick ? 'pointer' : 'default')};
 `;
 
-const TableCell = styled.div`
-	display: flex;
-	align-items: center;
-	color: ${props => props.theme.colors.fontPrimary};
-	font-size: 12px;
-	padding: 10px 0;
-	height: ${CARD_HEIGHT};
+const TableCell = styled(FlexDivCentered)`
 	box-sizing: border-box;
 	&:first-child {
 		padding-left: 18px;
 	}
 	&:last-child {
-		justify-content: flex-end;
 		padding-right: 18px;
 	}
 `;
 
 const TableCellHead = styled(TableCell)`
-	color: ${props => props.theme.colors.fontTertiary};
 	user-select: none;
 	text-transform: uppercase;
-	background-color: ${props => props.theme.colors.surfaceL3};
 `;
 
 const SortIconContainer = styled.span`
@@ -154,13 +133,76 @@ const ReactTable = styled.div`
 	position: relative;
 
 	${props =>
-		props.palette === TABLE_PALETTE.LIGHT_SECONDARY &&
+		props.palette === TABLE_PALETTE.PRIMARY &&
 		css`
+			${TableBody} {
+				max-height: calc(100% - ${CARD_HEIGHT});
+			}
+			${TableCell} {
+				color: ${props => props.theme.colors.fontPrimary};
+				font-size: 12px;
+				height: ${CARD_HEIGHT};
+			}
+			${TableRow} {
+				background-color: ${props => props.theme.colors.surfaceL3};
+				margin-bottom: 8px;
+			}
+			${TableCellHead} {
+				color: ${props => props.theme.colors.fontTertiary};
+				background-color: ${props => props.theme.colors.surfaceL3};
+			}
+			${TableBodyRow} {
+				background-color: ${props => props.theme.colors.surfaceL3};
+				&:hover {
+					background-color: ${props => props.theme.colors.accentDark};
+					> * {
+						transition: transform 0.2s ease-out;
+						transform: scale(1.02);
+					}
+				}
+			}
+		`}
+
+${props =>
+	props.palette === TABLE_PALETTE.STRIPED &&
+	css`
+		${TableBody} {
+			max-height: calc(100% - 48px);
+		}
+		${TableCell} {
+			color: ${props => props.theme.colors.fontPrimary};
+			font-size: 12px;
+			height: 48px;
+		}
+		${TableRow} {
+			background-color: ${props => props.theme.colors.surfaceL3};
+			&:nth-child(odd) {
+				background-color: ${props => props.theme.colors.surfaceL2};
+			}
+		}
+		${TableCellHead} {
+			color: ${props => props.theme.colors.fontTertiary};
+			background-color: ${props => props.theme.colors.surfaceL3};
+		}
+		${TableBodyRow} {
+			background-color: ${props => props.theme.colors.surfaceL3};
+		}
+	`}		
+
+	${props =>
+		props.palette === TABLE_PALETTE.LIGHT &&
+		css`
+			${TableBody} {
+				max-height: calc(100% - ${CARD_HEIGHT});
+			}
 			${TableCell} {
 				font-size: 14px;
+				color: ${lightTheme.colors.fontPrimary};
+				height: ${CARD_HEIGHT};
 			}
-			${TableRow}, ${TableCellHead} {
-				background-color: ${lightTheme.colors.brand};
+			${TableRow} {
+				background-color: ${darkTheme.colors.brand};
+				margin-bottom: 8px;
 			}
 			${TableCellHead} {
 				background-color: ${lightTheme.colors.brand};
@@ -169,13 +211,9 @@ const ReactTable = styled.div`
 				font-size: 12px;
 			}
 			${TableBodyRow} {
-				background-color: transparent;
+				background-color: ${darkTheme.colors.brand};
 				border: 1px solid ${lightTheme.colors.surfaceL1};
 				&:hover {
-					> * {
-						transition: none;
-						transform: none;
-					}
 					transition: box-shadow 0.2s ease-in-out;
 					box-shadow: rgba(188, 99, 255, 0.08) 0px 4px 6px;
 				}

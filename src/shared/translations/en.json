@@ -164,11 +164,11 @@
 					"title": "wallet breakdown"
 				}
 			},
-			"my-assets": {
+			"your-assets": {
 				"title": "your assets",
 				"table": {
 					"asset-col": "asset",
-					"description-col": "description",
+					"asset-description-col": "description",
 					"total-col": "total",
 					"pending-txs-col": "pending txs",
 					"actions-col": "actions"

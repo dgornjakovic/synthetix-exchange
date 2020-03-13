@@ -37,7 +37,7 @@ export const MarketsTable = memo(({ markets, synthsMap }) => {
 	return (
 		<ThemeProvider theme={lightTheme}>
 			<Table
-				palette={TABLE_PALETTE.LIGHT_SECONDARY}
+				palette={TABLE_PALETTE.LIGHT}
 				columns={[
 					{
 						Header: t('home.markets.table.pair-col'),

@@ -9,7 +9,7 @@ import { getExchangeData } from '../../dataFetcher';
 
 import { getWalletInfo } from '../../ducks';
 import { setAvailableSynths, updateFrozenSynths } from '../../ducks/synths';
-import { updateWalletStatus, fetchWalletBalances } from '../../ducks/wallet';
+import { updateNetworkSettings, fetchWalletBalances } from '../../ducks/wallet';
 import { fetchRates } from '../../ducks/rates';
 import { setExchangeFeeRate, setNetworkGasInfo } from '../../ducks/transaction';
 
@@ -24,7 +24,7 @@ const Root = ({
 	setNetworkGasInfo,
 	setExchangeFeeRate,
 	updateFrozenSynths,
-	updateWalletStatus,
+	updateNetworkSettings,
 	walletInfo: { currentWallet },
 	fetchWalletBalances,
 	fetchRates,
@@ -59,7 +59,7 @@ const Root = ({
 			if (!snxJSConnector.initialized) {
 				snxJSConnector.setContractSettings({ networkId });
 			}
-			updateWalletStatus({ networkId, networkName: name.toLowerCase() });
+			updateNetworkSettings({ networkId, networkName: name.toLowerCase() });
 
 			const synths = snxJSConnector.snxJS.contractSettings.synths.filter(synth => synth.asset);
 
@@ -95,7 +95,7 @@ const mapDispatchToProps = {
 	setAvailableSynths,
 	setNetworkGasInfo,
 	updateFrozenSynths,
-	updateWalletStatus,
+	updateNetworkSettings,
 	setExchangeFeeRate,
 	fetchWalletBalances,
 	fetchRates,

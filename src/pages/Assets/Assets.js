@@ -12,14 +12,20 @@ import Transactions from './Transactions';
 const Assets = memo(() => (
 	<Container>
 		<AssetsNavigation />
-		<Switch>
-			<Route path={ROUTES.Assets.Overview} component={Overview} />
-			<Route path={ROUTES.Assets.Transactions} component={Transactions} />
-			<Redirect to={ROUTES.Assets.Overview} />
-		</Switch>
+		<Content>
+			<Switch>
+				<Route path={ROUTES.Assets.Overview} component={Overview} />
+				<Route path={ROUTES.Assets.Transactions} component={Transactions} />
+				<Redirect to={ROUTES.Assets.Overview} />
+			</Switch>
+		</Content>
 	</Container>
 ));
 
 const Container = styled(CenteredPageLayout)``;
+
+const Content = styled.div`
+	flex-grow: 1;
+`;
 
 export default Assets;

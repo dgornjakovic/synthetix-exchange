@@ -1,5 +1,6 @@
 export const LINKS = {
 	Support: 'https://help.synthetix.io/hc/en-us',
+	Tokens: 'https://www.synthetix.io/tokens/',
 	Trading: {
 		DexAG: 'https://dex.ag/',
 	},
